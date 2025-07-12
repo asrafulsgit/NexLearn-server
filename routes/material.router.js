@@ -1,6 +1,6 @@
 const express = require('express');
 const tutorAuthentication = require('../middlewares/tutorAuth.middleware');
-const { createMaterial, getMyMaterials, getAllMaterials, deleteMaterial, getMaterialsBySession } = require('../controllers/material.controllers');
+const { createMaterial, getMyMaterials, getAllMaterials, deleteMaterial, getMaterialsBySession, updateMaterial } = require('../controllers/material.controllers');
 const adminAuthentication = require('../middlewares/adminAuth.middleware');
 const studentAuthentication = require('../middlewares/studentAuth.middleware');
 
@@ -10,7 +10,7 @@ const materialRouter = express.Router();
 // create material 
 materialRouter.post('/tutor',tutorAuthentication,  createMaterial);
 // update material who is created
-materialRouter.put('/tutor/:materialId', auth, isTutor, updateMaterial);
+materialRouter.put('/tutor/:materialId', tutorAuthentication, updateMaterial);
 // get all materials who is created 
 materialRouter.get('/tutor',tutorAuthentication, getMyMaterials);
 

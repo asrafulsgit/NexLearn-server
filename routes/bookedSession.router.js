@@ -1,6 +1,6 @@
 const express = require("express");
 const studentAuthentication = require("../middlewares/studentAuth.middleware");
-const { bookSession, getMyBookedSessions, cancelBooking, getAllBookings } = require("../controllers/bookedSession.controllers");
+const { bookSession, getMyBookedSessions, cancelBooking, getAllBookings, getBookedStudentsBySession } = require("../controllers/bookedSession.controllers");
 const adminAuthentication = require("../middlewares/adminAuth.middleware");
 const bookedSessionRouter = express.Router();
 

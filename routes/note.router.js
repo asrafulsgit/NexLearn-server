@@ -13,7 +13,7 @@ noteRouter.post('/student',studentAuthentication, createNote);
 noteRouter.get('/student',studentAuthentication, getMyNotes);
 
 // Update a specific note (only if it belongs to the student)
-router.patch('/student/:noteId',studentAuthentication, updateNote);
+noteRouter.put('/student/:noteId',studentAuthentication, updateNote);
 
 // Delete a specific note (only if it belongs to the student)
 noteRouter.delete('/student/:noteId',studentAuthentication, deleteNote);
