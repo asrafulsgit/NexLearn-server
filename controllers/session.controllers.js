@@ -322,6 +322,44 @@ const rejectSession = async (req, res) => {
   }
 };
 
+// GET: Recent 6 Approved Sessions
+const availableSessions = async (req, res) => {
+  try {
+    const sessions = await Session.find({ status: 'approved' })
+      .sort({ createdAt: -1 }) 
+      .limit(6);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Fetched  available sessions successfully',
+      data: sessions,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch available sessions',
+    });
+  }
+};
+// GET all approved Sessions
+const getAllSessions = async (req, res) => {
+  try {
+    const sessions = await Session.find({ status: 'approved' })
+      .sort({ createdAt: -1 }) 
+
+    return res.status(200).json({
+      success: true,
+      message: 'Fetched all available sessions successfully',
+      data: sessions,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch all available sessions',
+    });
+  }
+};
+
 module.exports = {
   createSession,
   getAllSessionsAdmin,
@@ -331,4 +369,6 @@ module.exports = {
   deleteSession,
   approveSession,
   rejectSession,
+  availableSessions,
+  getAllSessions
 };

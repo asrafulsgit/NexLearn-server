@@ -2,12 +2,18 @@ const express = require('express');
 const sessionRouter = express.Router();
 
 
-const { getAllSessionsAdmin, getSessionById, createSession, updateSession, deleteSession, approveSession, rejectSession, getAllSessionsTutor } = require('../controllers/session.controllers');
+const { getAllSessionsAdmin, getSessionById, createSession, updateSession, deleteSession, approveSession, rejectSession, getAllSessionsTutor, availableSessions, getAllSessions } = require('../controllers/session.controllers');
 const studentAuthentication = require('../middlewares/studentAuth.middleware');
 const tutorAuthentication = require('../middlewares/tutorAuth.middleware');
 const adminAuthentication = require('../middlewares/adminAuth.middleware');
 
 // -------------------- PUBLIC (Auth Required) --------------------
+
+// get all availabe session
+sessionRouter.get('/', getAllSessions);
+
+// get availabe session
+sessionRouter.get('/available', availableSessions);
 
 // Get single session by ID (any logged-in user)
 sessionRouter.get('/:seesionId', studentAuthentication, getSessionById);
