@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
     default: 'student'
   }
 }, {
-  timestamps: true
+  timestamps: true, versionKey : false
 });
 
 const User = mongoose.model('User', UserSchema);

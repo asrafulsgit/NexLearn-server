@@ -11,7 +11,7 @@ const materialSchema = new mongoose.Schema({
   },
   session: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'StudySession',
+    ref: 'Session',
     required: true
   }
 }, { timestamps: true, versionKey : false });
