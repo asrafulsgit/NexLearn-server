@@ -5,11 +5,11 @@ const userAuthentication = require('../middlewares/userAuth-middleware');
 const userRouter = express.Router();
 
 
-userRouter.post('/user/register', userRegister)
-userRouter.post('/user/login', userLogin)
+userRouter.post('/register', userRegister)
+userRouter.post('/login', userLogin)
 userRouter.post('/google/login', googleLogin)
-userRouter.get('/user/logout',userAuthentication, userLogout)
-userRouter.get('/user/observer',userAuthentication, userObserver)
+userRouter.get('/logout',userAuthentication, userLogout)
+userRouter.get('/observer',userAuthentication, userObserver)
 
  
 

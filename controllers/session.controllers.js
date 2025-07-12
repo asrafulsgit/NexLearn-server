@@ -2,8 +2,17 @@ const Session = require("../models/session.model");
 
 // Create a new session (Tutor)
 const createSession = async (req, res) => {
-  const { id } = req.tutor;
+ 
   try {
+    const { id } = req.tutor;
+
+     if (!id) {
+      return res.status(404).json({
+        success: false,
+        message: "tutor id is required",
+      });
+    } 
+
     const {
       title,
       description,
@@ -78,8 +87,15 @@ const getAllSessionsAdmin = async (req, res) => {
 };
 // Get all sessions (tutor)
 const getAllSessionsTutor = async (req, res) => {
-  const { id } = req.tutor;
   try {
+    const { id } = req.tutor;
+
+     if (!id) {
+      return res.status(404).json({
+        success: false,
+        message: "tutor id is required",
+      });
+    }
     const sessions = await Session.find({ tutor: id }).populate(
       "tutor",
       "name email"
@@ -99,8 +115,8 @@ const getAllSessionsTutor = async (req, res) => {
 
 // Get single session by ID
 const getSessionById = async (req, res) => {
-  const id = req.params.sessionId;
   try {
+    const id = req.params.sessionId;
     if (!id) {
       return res.status(404).json({
         success: false,
@@ -129,9 +145,11 @@ const getSessionById = async (req, res) => {
 
 // Update session (only by the tutor who created it)
 const updateSession = async (req, res) => {
-  const id = req.params.sessionId;
   try {
-    if (!id) {
+    const id = req.params?.sessionId;
+    const tutorId = req.tutor?.id;
+
+    if (!id || !tutorId) {
       return res.status(404).json({
         success: false,
         message: "Session id required",
@@ -142,6 +160,12 @@ const updateSession = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Session not found",
+      });
+    }
+    if (session.tutor.toString() !== tutorId) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to update this session",
       });
     }
 
@@ -178,9 +202,11 @@ const updateSession = async (req, res) => {
 
 // Delete session (only by the tutor who created it)
 const deleteSession = async (req, res) => {
-  const id = req.params.sessionId;
   try {
-    if (!id) {
+    const id = req.params?.sessionId;
+    const tutorId = req.tutor?.id;
+
+    if (!id || !tutorId) {
       return res.status(404).json({
         success: false,
         message: "Session id required",
@@ -193,7 +219,12 @@ const deleteSession = async (req, res) => {
         message: "Session not found",
       });
     }
-
+    if (session.tutor.toString() !== tutorId) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this session",
+      });
+    }
     await session.deleteOne();
     return res.status(200).json({
       success: true,
@@ -210,8 +241,9 @@ const deleteSession = async (req, res) => {
 
 // Approve session (Admin only)
 const approveSession = async (req, res) => {
-  const id = req.params.sessionId;
   try {
+    const id = req.params?.sessionId;
+
     if (!id) {
       return res.status(404).json({
         success: false,
@@ -246,8 +278,9 @@ const approveSession = async (req, res) => {
 
 // Reject session (Admin only)
 const rejectSession = async (req, res) => {
-  const id = req.params.sessionId;
   try {
+    const id = req.params.sessionId;
+    
     if (!id) {
       return res.status(404).json({
         success: false,
