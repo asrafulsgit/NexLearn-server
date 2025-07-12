@@ -3,8 +3,9 @@ const Note = require("../models/note.model");
 
 // Create Note
 const createNote = async (req, res) => {
-    const studentId = req.student?.id;
-  try {
+    try {
+      const studentId = req.student?.id;
+
     if (!studentId) {
       return res.status(400).json({
         success: false,
@@ -43,8 +44,9 @@ const createNote = async (req, res) => {
 
 // Get notes created by student
 const getMyNotes = async (req, res) => {
-    const studentId = req.student?.id;
-  try {
+    try {
+      const studentId = req.student?.id;
+      
     if (!studentId) {
         return res.status(400).json({
             success: false,
@@ -68,9 +70,11 @@ const getMyNotes = async (req, res) => {
 
 // Update note
 const updateNote = async (req, res) => {
-    const noteId = req.params.id;
-    const studentId = req.student?.id;
-  try {
+    try {
+      const {noteId} = req.params;
+      const studentId = req.student?.id;
+
+
      if (!studentId || !noteId) {
         return res.status(400).json({
             success: false,
@@ -115,9 +119,10 @@ const updateNote = async (req, res) => {
 
 // Delete note
 const deleteNote = async (req, res) => {
-    const noteId = req.params.id;
-    const studentId = req.student?.id;
-  try {
+    try {
+      const {noteId} = req.params ;
+      const studentId = req.student?.id;
+
     if (!studentId || !noteId) {
             return res.status(400).json({
                 success: false,
