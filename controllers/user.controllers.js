@@ -34,7 +34,7 @@ const userRegister = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      avatar,
+      avatar : avatar?.trim(),
     });
 
     await newUser.save();
