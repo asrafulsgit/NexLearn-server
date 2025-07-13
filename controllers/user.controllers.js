@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user.model'); 
-
+const admin = require('../config/firebase.config')
 // register user
 const userRegister = async (req, res) => {
   try {
@@ -52,6 +52,7 @@ const userRegister = async (req, res) => {
   }
 };
 
+
 // login user : email and password
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -72,7 +73,7 @@ const userLogin = async (req, res) => {
         message: "Incorrect password.",
       });
     }
-
+   
     const accessToken = jwt.sign(
       {
         id: user._id,
@@ -112,7 +113,7 @@ const userLogin = async (req, res) => {
 // login user : google
 const googleLogin = async (req, res) => {
   const { token } = req.body;
-
+   
   try {
     const decoded = await admin.auth().verifyIdToken(token);
     const { email, name, picture } = decoded;
