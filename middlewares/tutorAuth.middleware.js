@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const tutorAuthentication = async(req,res,next)=>{
      const {nluAccessToken} =req.cookies;
+    
      try {
           if (!nluAccessToken) {
             return res.status(401).send({
@@ -9,8 +10,8 @@ const tutorAuthentication = async(req,res,next)=>{
                 message: 'Access denied. No token provided.',
             });
           }
-          const verifytoken =  jwt.verify(nluAccessToken, process.env.JWT_ACCESS_TOEKN)
-        
+          const verifytoken =  jwt.verify(nluAccessToken, process.env.JWT_ACCESS_TOKEN)
+          
           if(verifytoken.role !== 'tutor'){
                return res.status(400).send({
                     success : false,

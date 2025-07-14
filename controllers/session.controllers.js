@@ -21,9 +21,9 @@ const createSession = async (req, res) => {
       registrationEnd,
       classStart,
       classEnd,
-      duration,
+      duration
     } = req.body;
-
+     
     if (
       !title ||
       !description ||
@@ -36,7 +36,7 @@ const createSession = async (req, res) => {
     ) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "Please fill up required fields.",
       });
     }
 

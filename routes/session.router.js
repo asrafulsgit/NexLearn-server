@@ -10,13 +10,13 @@ const adminAuthentication = require('../middlewares/adminAuth.middleware');
 // -------------------- PUBLIC (Auth Required) --------------------
 
 // get all availabe session
-sessionRouter.get('/', getAllSessions);
+sessionRouter.get('/user', getAllSessions);
 
 // get availabe session
-sessionRouter.get('/available', availableSessions);
+sessionRouter.get('/user/available', availableSessions);
 
 // Get single session by ID (any logged-in user)
-sessionRouter.get('/:seesionId', studentAuthentication, getSessionById);
+sessionRouter.get('/user/:seesionId', studentAuthentication, getSessionById);
 
 // -------------------- TUTOR ROUTES --------------------
 
