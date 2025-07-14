@@ -191,28 +191,39 @@ const userLogout = (req, res) => {
 
 
 // user observer
-// const userObserver = async (req, res) => {
-//   const {email} = req.user;
-//   try {
-//    if(!email){
-//     return res.status(400).send({
-//       message : "Unauth user!",
-//       success : false
-//     })
-//    }
-//    const user = await User.findOne({email})
-//    return res.status(200).send({
-//       user : {name : user?.name,email : user?.email,avatar : user?.avatar},
-//       message : "Authenticated user!",
-//       success : true
-//     })
-//   } catch (error) {
-//     return res.status(500).send({
-//       message: "somthing broke!",
-//       success: false,
-//     });
-//   }
-// };
+const userObserver = async (req, res) => {
+  const {email} = req.student;
+  try {
+   if(!email){
+    return res.status(400).send({
+      message : "Unauth user!",
+      success : false
+    })
+   }
+   const user = await User.findOne({email})
+   if(!user){
+     return res.status(400).send({
+      message : "Unauth user!",
+      success : false
+    })
+   }
+   return res.status(200).send({
+      user : {
+        name : user?.name,
+        email : user?.email,
+        avatar : user?.avatar,
+        role : user?.role
+      },
+      message : "Authenticated user!",
+      success : true
+    })
+  } catch (error) {
+    return res.status(500).send({
+      message: "somthing broke!",
+      success: false,
+    });
+  }
+};
 
 
 
@@ -221,5 +232,6 @@ module.exports={
      userRegister,
      userLogin,
      googleLogin,
-     userLogout
+     userLogout,
+     userObserver
 }

@@ -1,5 +1,5 @@
 const express = require('express'); 
-const { userRegister, userLogin, googleLogin, userLogout } = require('../controllers/user.controllers');
+const { userRegister, userLogin, googleLogin, userLogout, userObserver } = require('../controllers/user.controllers');
 
 const studentAuthentication = require('../middlewares/studentAuth.middleware');
 
@@ -10,7 +10,7 @@ userRouter.post('/register', userRegister)
 userRouter.post('/login', userLogin)
 userRouter.post('/google/login', googleLogin)
 userRouter.get('/logout',studentAuthentication , userLogout)
-// userRouter.get('/observer',userAuthentication, userObserver)
+userRouter.get('/observer',studentAuthentication, userObserver)
 
  
 
