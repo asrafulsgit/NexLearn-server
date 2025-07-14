@@ -98,7 +98,7 @@ const searchUserByName = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Users found",
-      data: users
+      users
     });
   } catch (error) {
     console.error("Error searching users by name:", error.message);
@@ -109,10 +109,33 @@ const searchUserByName = async (req, res) => {
   }
 };
 
+// filter user by role (admin only)
+
+const filterUsersWithRole = async(req,res)=>{
+  const {role} = req.query; 
+  try {
+    if(!role){
+      return res.status(404).send({ 
+      success: false, 
+      message: 'User role is required!' 
+    });
+    }
+    const users = await User.find({role})
+    return res.status(200).send({ 
+      success: true, 
+      users,
+      message: 'Users filter successfull' 
+    });
+  } catch (error) {
+    return res.status(500).send({ success: false, message: "Server error while filtering users" });
+  }
+}
+
 
 
 module.exports = {
   getAllUsers,
   updateUserRole,
-  searchUserByName
+  searchUserByName,
+  filterUsersWithRole
 };

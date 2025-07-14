@@ -1,3 +1,4 @@
+const Material = require("../models/material.model");
 const Session = require("../models/session.model");
 
 // Create a new session (Tutor)
@@ -71,7 +72,7 @@ const createSession = async (req, res) => {
 // resubmit session
 const reSubmitSession = async (req, res) => {
   try {
-    const tutorId = req.tutor;
+    const tutorId = req.tutor?.id;
     const { sessionId } = req.params;
 
      if (!sessionId || !tutorId) {
@@ -117,7 +118,8 @@ const reSubmitSession = async (req, res) => {
 // Get all sessions (admin)
 const getAllSessionsAdmin = async (req, res) => {
   try {
-    const sessions = await Session.find({status : 'pending'}).populate("tutor", "name email");
+    const sessions = await Session.find({ $or : [{status : 'pending'},{ status : 'approved'}]})
+    .populate("tutor", "name email");
     return res.status(200).json({
       success: true,
       sessions
@@ -130,6 +132,7 @@ const getAllSessionsAdmin = async (req, res) => {
     });
   }
 };
+
 // Get all sessions (tutor)
 const getAllSessionsTutor = async (req, res) => {
   try {
@@ -142,6 +145,33 @@ const getAllSessionsTutor = async (req, res) => {
       });
     }
     const sessions = await Session.find({ tutor: id }).populate(
+      "tutor",
+      "name email"
+    );
+    return res.status(200).json({
+      success: true,
+      sessions,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve sessions",
+      error: err.message,
+    });
+  }
+};
+// Get all approved sessions (tutor)
+const getAllApprovedSessionsTutor = async (req, res) => {
+  try {
+    const { id } = req.tutor;
+
+     if (!id) {
+      return res.status(404).json({
+        success: false,
+        message: "tutor id is required",
+      });
+    }
+    const sessions = await Session.find({ tutor: id , status : 'approved'}).populate(
       "tutor",
       "name email"
     );
@@ -321,6 +351,76 @@ const approveSession = async (req, res) => {
   }
 };
 
+// update session (admin only)
+const updateSessionAmin = async (req, res) => {
+  try {
+    const id = req.params?.sessionId;
+
+    if (!id) {
+      return res.status(404).json({
+        success: false,
+        message: "Session id required",
+      });
+    }
+    const session = await Session.findById(id);
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        message: "Session not found",
+      });
+    }
+
+    session.fee = Number(req.body.fee) || 0;
+    await session.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Session update successfully",
+      session,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update session",
+      error: err.message,
+    });
+  }
+};
+
+// delete session (admin only)
+const deleteSessionAdmin = async (req, res) => {
+  try {
+    const id = req.params?.sessionId;
+
+    if (!id ) {
+      return res.status(404).json({
+        success: false,
+        message: "Session id  required",
+      });
+    }
+    const session = await Session.findById(id);
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        message: "Session not found",
+      });
+    }
+    
+    await session.deleteOne();
+    await Material.deleteMany({session : session._id});
+    return res.status(200).json({
+      success: true,
+      message: "Session deleted",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete session",
+      error: err.message,
+    });
+  }
+};
+
 // Reject session (Admin only)
 const rejectSession = async (req, res) => {
   try {
@@ -406,6 +506,8 @@ const getAllSessions = async (req, res) => {
 
 module.exports = {
   createSession,
+  reSubmitSession,
+  getAllApprovedSessionsTutor,
   getAllSessionsAdmin,
   getAllSessionsTutor,
   getSessionById,
@@ -414,5 +516,7 @@ module.exports = {
   approveSession,
   rejectSession,
   availableSessions,
-  getAllSessions
+  getAllSessions,
+  updateSessionAmin,
+  deleteSessionAdmin
 };

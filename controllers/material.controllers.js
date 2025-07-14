@@ -3,15 +3,17 @@ const Session = require("../models/session.model");
 
 // Create Material (tutor only)
 const createMaterial = async (req, res) => {
-  const { sessionId } = req.params;
-  const tutorId = req.tutor.id;
+  
   try {
+    const { sessionId } = req.params;
+    const tutorId = req.tutor?.id;
+
     const { title, driveLink, image } = req.body;
 
     if (!tutorId || !sessionId || !title || !driveLink || !image) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "Please, fillup required fields.",
       });
     }
 
@@ -67,7 +69,7 @@ const getMyMaterials = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Materials fatched",
-      materials,
+      materials
     });
   } catch (error) {
     return res.status(500).json({
@@ -146,7 +148,8 @@ const updateMaterial = async (req, res) => {
   }
 };
 
-// Delete material (admin only)
+
+// Delete material (admin or tutor )
 const deleteMaterial = async (req, res) => {
   try {
     const { materialId } = req.params;

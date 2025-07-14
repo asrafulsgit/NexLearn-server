@@ -2,7 +2,7 @@ const express = require('express');
 const sessionRouter = express.Router();
 
 
-const { getAllSessionsAdmin, getSessionById, createSession, updateSession, deleteSession, approveSession, rejectSession, getAllSessionsTutor, availableSessions, getAllSessions } = require('../controllers/session.controllers');
+const { getAllSessionsAdmin, getSessionById, createSession,reSubmitSession, updateSession, deleteSession, approveSession, rejectSession, getAllSessionsTutor, availableSessions, getAllSessions, getAllApprovedSessionsTutor, updateSessionAmin, deleteSessionAdmin } = require('../controllers/session.controllers');
 const studentAuthentication = require('../middlewares/studentAuth.middleware');
 const tutorAuthentication = require('../middlewares/tutorAuth.middleware');
 const adminAuthentication = require('../middlewares/adminAuth.middleware');
@@ -23,11 +23,14 @@ sessionRouter.get('/user/:seesionId', studentAuthentication, getSessionById);
 // get all sessions created by tutor
 sessionRouter.get('/tutor', tutorAuthentication, getAllSessionsTutor);
 
+// get all approved sessions created by tutor
+sessionRouter.get('/tutor/approve', tutorAuthentication, getAllApprovedSessionsTutor);
+
 // Create a new session
 sessionRouter.post('/tutor', tutorAuthentication, createSession);
 
 // re submit session
-sessionRouter.put('/tutor/re-submit/:sessionId', tutorAuthentication, createSession);
+sessionRouter.put('/tutor/re-submit/:sessionId', tutorAuthentication, reSubmitSession);
 
 // Update a session (only tutor who created it)
 sessionRouter.put('/tutor/:sessionId', tutorAuthentication, updateSession);
@@ -38,6 +41,13 @@ sessionRouter.delete('/tutor/:sessionId', tutorAuthentication, deleteSession);
 // -------------------- ADMIN ROUTES --------------------
 // Get all sessions  
 sessionRouter.get('/admin', adminAuthentication, getAllSessionsAdmin);
+
+// delete session  
+sessionRouter.delete('/admin/:sessionId', adminAuthentication, deleteSessionAdmin);
+
+// update session
+sessionRouter.put('/admin/:sessionId', adminAuthentication, updateSessionAmin);
+
 // Approve a session
 sessionRouter.put('/admin/approve/:sessionId', adminAuthentication,approveSession);
 
