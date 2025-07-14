@@ -26,6 +26,9 @@ sessionRouter.get('/tutor', tutorAuthentication, getAllSessionsTutor);
 // Create a new session
 sessionRouter.post('/tutor', tutorAuthentication, createSession);
 
+// re submit session
+sessionRouter.put('/tutor/re-submit/:sessionId', tutorAuthentication, createSession);
+
 // Update a session (only tutor who created it)
 sessionRouter.put('/tutor/:sessionId', tutorAuthentication, updateSession);
 
@@ -36,9 +39,9 @@ sessionRouter.delete('/tutor/:sessionId', tutorAuthentication, deleteSession);
 // Get all sessions  
 sessionRouter.get('/admin', adminAuthentication, getAllSessionsAdmin);
 // Approve a session
-sessionRouter.patch('/admin/approve/:sessionId', adminAuthentication,approveSession);
+sessionRouter.put('/admin/approve/:sessionId', adminAuthentication,approveSession);
 
 // Reject a session with reason
-sessionRouter.patch('/admin/reject/:sessionId', adminAuthentication, rejectSession);
+sessionRouter.put('/admin/reject/:sessionId', adminAuthentication, rejectSession);
 
 module.exports = sessionRouter;

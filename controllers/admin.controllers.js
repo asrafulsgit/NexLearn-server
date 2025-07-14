@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 
 // get All users (for admin)
 const getAllUsers = async (req, res) => {
+  
   try {
     const users = await User.find().select("-password");
 
@@ -15,7 +16,7 @@ const getAllUsers = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "All users fetched successfully",
-      data: users,
+      users,
     });
   } catch (error) {
     console.error("Error fetching users:", error.message);

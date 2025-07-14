@@ -68,14 +68,59 @@ const createSession = async (req, res) => {
     });
   }
 };
+// resubmit session
+const reSubmitSession = async (req, res) => {
+  try {
+    const tutorId = req.tutor;
+    const { sessionId } = req.params;
+
+     if (!sessionId || !tutorId) {
+      return res.status(404).json({
+        success: false,
+        message: "session and tutor id are required",
+      });
+    } 
+
+   const session = await Session.findById(sessionId);
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        message: "Session not found",
+      });
+    }
+  if (session.tutor.toString() !== tutorId) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to re submit this session",
+      });
+    }
+
+    session.status = "pending";
+    await session.save();
+
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "Session Re submit successfully",
+        session
+      });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: err.message,
+    });
+  }
+};
 
 // Get all sessions (admin)
 const getAllSessionsAdmin = async (req, res) => {
   try {
-    const sessions = await Session.find().populate("tutor", "name email");
+    const sessions = await Session.find({status : 'pending'}).populate("tutor", "name email");
     return res.status(200).json({
       success: true,
-      sessions,
+      sessions
     });
   } catch (err) {
     return res.status(500).json({
@@ -259,7 +304,7 @@ const approveSession = async (req, res) => {
     }
 
     session.status = "approved";
-    session.fee = req.body.fee || 0;
+    session.fee = Number(req.body.fee) || 0;
     await session.save();
 
     return res.status(200).json({
@@ -279,24 +324,23 @@ const approveSession = async (req, res) => {
 // Reject session (Admin only)
 const rejectSession = async (req, res) => {
   try {
-    const id = req.params.sessionId;
-    
+    const id = req.params?.sessionId;
     if (!id) {
       return res.status(404).json({
         success: false,
         message: "Session id required",
       });
     }
-    const { reason, feedback } = req.body;
-
-    if (!reason) {
+    const { rejectionReason, rejectionFeedback } = req.body;
+    
+    if (!rejectionReason) {
       return res.status(400).json({
         success: false,
         message: "Rejection reason is required",
       });
     }
-
-    const session = await Session.findById();
+    
+    const session = await Session.findById(id);
     if (!session) {
       return res
         .status(404)
@@ -304,8 +348,8 @@ const rejectSession = async (req, res) => {
     }
 
     session.status = "rejected";
-    session.rejectionReason = reason;
-    session.feedback = feedback || "";
+    session.rejectionReason = rejectionReason;
+    session.feedback = rejectionFeedback || "";
     await session.save();
 
     return res.status(200).json({
