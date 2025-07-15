@@ -1,4 +1,5 @@
 const BookedSession = require('../models/bookedSession.model');
+const Payment = require('../models/payment.model');
 const Session = require('../models/session.model');
 const User = require('../models/user.model');
 
@@ -6,10 +7,18 @@ const User = require('../models/user.model');
 const bookSession = async (req, res) => {
   try {
     const studentId = req.student?.id;  
+    const {role} = req.student;  
     const { sessionId } = req.params;
 
+    if(role !== 'student'){
+        return res.status(401).json({ 
+        success: false, 
+        message: "Unauth user." 
+    });
+    }
+
     if (!sessionId || !studentId) {
-      return res.status(400).json({ 
+    return res.status(400).json({ 
         success: false, 
         message: "Session and Student ID are required" 
     });
@@ -31,6 +40,16 @@ const bookSession = async (req, res) => {
         success: false, 
         message: "You have already booked this session" 
     });
+    }
+
+    if(session.fee > 0){
+      const isPaid = await Payment.findOne({session : sessionId, student : studentId});
+      if(!isPaid || isPaid.status !== 'paid'){
+        return res.status(400).json({ 
+        success: false, 
+        message: "Please complete payment" 
+      });
+      } 
     }
 
     const newBooking = new BookedSession({
@@ -152,10 +171,45 @@ const getBookedStudentsBySession = async (req, res) => {
   }
 };
 
+// session booking status and get session data 
+const isSessionBooked = async (req, res) => {
+  const studentId = req.student?.id;  
+  const { sessionId } = req.params;
+
+  try {
+    if (!sessionId || !studentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Session and student ID are required",
+      });
+    }
+
+    const booking = await BookedSession.findOne({
+      session: sessionId,
+      student: studentId,
+    });
+
+    const isBooked = !!booking;
+
+    return res.status(200).json({
+      success: true,
+      isBooked,
+      booking
+    });
+  } catch (error) {
+    console.error("Check booking error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while checking session booking",
+    });
+  }
+};
+
 module.exports = {
   bookSession,
   getMyBookedSessions,
   cancelBooking,
   getAllBookings,
-  getBookedStudentsBySession
+  getBookedStudentsBySession,
+  isSessionBooked
 };

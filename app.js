@@ -9,6 +9,7 @@ const bookedSessionRouter = require('./routes/bookedSession.router');
 const reviewRouter = require('./routes/review.router');
 const tutorRouter = require('./routes/tutor.router');
 const adminRouter = require('./routes/admin.router');
+const paymentRouter = require('./routes/payment.router');
 
 const app = express();
 app.use(express.json());
@@ -29,6 +30,7 @@ app.use('/api/v1/booked',  bookedSessionRouter);
 app.use('/api/v1/reviews',  reviewRouter); 
 app.use('/api/v1/tutors',  tutorRouter); 
 app.use('/api/v1/admin',  adminRouter); 
+app.use('/api/v1/payment',  paymentRouter); 
 
 
 
