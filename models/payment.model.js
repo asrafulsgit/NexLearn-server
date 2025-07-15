@@ -23,5 +23,8 @@ const paymentSchema = new mongoose.Schema({
 }
 },{timestamps : true, versionKey : false});
 
+paymentSchema.index({student : 1, session : 1},{unique : true})
+
+
 const Payment =  mongoose.model('Payment', paymentSchema);
 module.exports = Payment;

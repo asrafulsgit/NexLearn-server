@@ -1,6 +1,7 @@
 const express = require('express');
 const stripe = require('../config/stripe.config');
 const Payment = require('../models/payment.model');
+const BookedSession = require('../models/bookedSession.model');
 
 
 // create stripe payment 
@@ -9,7 +10,6 @@ const createPaymentSession = async (req, res) => {
     const {sessionId} = req.params;
     const studentId = req.student?.id;
     const { amount } = req.body;
-
     if (!studentId || !sessionId || !amount) {
       return res.status(400).json({ 
         success : false,
@@ -17,12 +17,7 @@ const createPaymentSession = async (req, res) => {
     })
     };
 
-    const payment = await Payment.create({
-      student: studentId,
-      session: sessionId,
-      amount,
-      status: 'unpaid'
-    });
+    
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
@@ -34,19 +29,25 @@ const createPaymentSession = async (req, res) => {
             product_data: {
               name: 'Session Payment',
             },
-            unit_amount: Number(amount),
+            unit_amount: Number(amount * 100),
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL}/success?sessionId=${sessionId}`,
+      success_url: `${process.env.FRONTEND_URL}/success/${payment?._id}`,
       cancel_url: `${process.env.FRONTEND_URL}/cancel`,
       metadata: {
         paymentId: payment._id.toString(),
       },
     });
 
+    const payment = await Payment.create({
+          student: studentId,
+          session: sessionId,
+          amount,
+          status: 'paid'
+        });
     return res.status(201).json({ 
         success : true,
         message : 'Payment created',
@@ -78,16 +79,32 @@ const handleStripeWebhook = async (req, res) => {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
+    const { paymentId, studentId, sessionId } = session.metadata;
 
-    const paymentId = session.metadata.paymentId;
+    try {
+      //  1. Mark payment as paid
+      await Payment.findByIdAndUpdate(paymentId, { status: 'paid' });
 
-    await Payment.findByIdAndUpdate(paymentId, {
-      status: 'paid',
-    });
+      //  2. Automatically book the session
+      const alreadyBooked = await BookedSession.findOne({ student: studentId, session: sessionId });
+      if (!alreadyBooked) {
+        await BookedSession.create({
+          student: studentId,
+          session: sessionId,
+          status: 'paid',  
+        });
+      }
+
+      console.log(`Session booked for student ${studentId}`);
+    } catch (err) {
+      console.error('Webhook booking error:', err);
+      return res.status(500).send('Internal server error');
+    }
   }
 
   res.json({ received: true });
 };
+
 
 
 const getUserPayments = async (req, res) => {
@@ -126,5 +143,6 @@ const deletePayment = async (req, res) => {
 
 
 module.exports ={
-    createPaymentSession
+    createPaymentSession,
+    handleStripeWebhook
 }
