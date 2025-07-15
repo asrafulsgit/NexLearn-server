@@ -21,7 +21,7 @@ const createPaymentSession = async (req, res) => {
           student: studentId,
           session: sessionId,
           amount,
-          status: 'paid'
+          status: 'unpaid'
         });
 
     // Create Stripe Checkout Session
