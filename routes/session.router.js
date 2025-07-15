@@ -16,7 +16,7 @@ sessionRouter.get('/user', getAllSessions);
 sessionRouter.get('/user/available', availableSessions);
 
 // Get single session by ID (any logged-in user)
-sessionRouter.get('/user/:seesionId', studentAuthentication, getSessionById);
+sessionRouter.get('/user/:sessionId', studentAuthentication, getSessionById);
 
 // -------------------- TUTOR ROUTES --------------------
 

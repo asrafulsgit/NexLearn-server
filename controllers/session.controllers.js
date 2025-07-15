@@ -193,6 +193,7 @@ const getAllApprovedSessionsTutor = async (req, res) => {
 const getSessionById = async (req, res) => {
   try {
     const id = req.params.sessionId;
+     
     if (!id) {
       return res.status(404).json({
         success: false,
@@ -490,12 +491,12 @@ const availableSessions = async (req, res) => {
 const getAllSessions = async (req, res) => {
   try {
     const sessions = await Session.find({ status: 'approved' })
-      .sort({ createdAt: -1 }) 
+      .sort({ createdAt: -1 }); 
 
     return res.status(200).json({
       success: true,
       message: 'Fetched all available sessions successfully',
-      data: sessions,
+      sessions,
     });
   } catch (error) {
     return res.status(500).json({

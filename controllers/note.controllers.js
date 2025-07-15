@@ -1,10 +1,19 @@
 const Note = require("../models/note.model");
 
 
+
+
 // Create Note
 const createNote = async (req, res) => {
     try {
       const studentId = req.student?.id;
+      const {role} = req.student;
+      if (role !== 'student') {
+      return res.status(401).json({
+        success: false,
+        message: "Unauth user.",
+      });
+    }
 
     if (!studentId) {
       return res.status(400).json({
@@ -46,7 +55,13 @@ const createNote = async (req, res) => {
 const getMyNotes = async (req, res) => {
     try {
       const studentId = req.student?.id;
-      
+      const {role} = req.student;
+      if (role !== 'student') {
+      return res.status(401).json({
+        success: false,
+        message: "Unauth user.",
+      });
+    }
     if (!studentId) {
         return res.status(400).json({
             success: false,
@@ -73,7 +88,14 @@ const updateNote = async (req, res) => {
     try {
       const {noteId} = req.params;
       const studentId = req.student?.id;
+      const {role} = req.student;
 
+      if (role !== 'student') {
+      return res.status(401).json({
+        success: false,
+        message: "Unauth user.",
+      });
+    }
 
      if (!studentId || !noteId) {
         return res.status(400).json({
@@ -122,7 +144,15 @@ const deleteNote = async (req, res) => {
     try {
       const {noteId} = req.params ;
       const studentId = req.student?.id;
+      const {role} = req.student;
 
+      if (role !== 'student') {
+      return res.status(401).json({
+        success: false,
+        message: "Unauth user.",
+      });
+    }
+    
     if (!studentId || !noteId) {
             return res.status(400).json({
                 success: false,

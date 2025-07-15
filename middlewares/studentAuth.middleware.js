@@ -4,6 +4,7 @@ const studentAuthentication = async (req, res, next) => {
   const { nluAccessToken } = req.cookies;
 
   try {
+  
     if (!nluAccessToken) {
       return res.status(401).send({
         success: false,
