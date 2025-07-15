@@ -87,7 +87,7 @@ const userLogin = async (req, res) => {
     res.cookie("nluAccessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",  
-      sameSite: "Lax",
+      sameSite: "None",
       maxAge: 1000 * 60 * 60 * 24 * 10, // 10 days
     });
 
@@ -143,7 +143,7 @@ const googleLogin = async (req, res) => {
     res.cookie("nluAccessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      sameSite: "None",
       maxAge: 1000 * 60 * 60 * 24 * 10,
     });
 
@@ -173,7 +173,7 @@ const userLogout = (req, res) => {
     res.clearCookie("nluAccessToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      sameSite: "None",
     });
 
     return res.status(200).json({

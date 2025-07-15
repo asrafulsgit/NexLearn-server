@@ -17,7 +17,12 @@ const createPaymentSession = async (req, res) => {
     })
     };
 
-    
+    const payment = await Payment.create({
+          student: studentId,
+          session: sessionId,
+          amount,
+          status: 'paid'
+        });
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
@@ -42,12 +47,7 @@ const createPaymentSession = async (req, res) => {
       },
     });
 
-    const payment = await Payment.create({
-          student: studentId,
-          session: sessionId,
-          amount,
-          status: 'paid'
-        });
+    
     return res.status(201).json({ 
         success : true,
         message : 'Payment created',

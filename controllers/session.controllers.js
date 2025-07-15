@@ -337,6 +337,8 @@ const approveSession = async (req, res) => {
 
     session.status = "approved";
     session.fee = Number(req.body.fee) || 0;
+    session.rejectionReason = '';
+    session.feedback = '';
     await session.save();
 
     return res.status(200).json({
@@ -478,7 +480,7 @@ const availableSessions = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Fetched  available sessions successfully',
-      data: sessions,
+      sessions,
     });
   } catch (error) {
     return res.status(500).json({

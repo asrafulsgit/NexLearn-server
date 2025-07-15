@@ -15,7 +15,7 @@ const getAllTutors = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Tutors fetched successfully",
-      data: tutors,
+      tutors,
     });
   } catch (error) {
     console.error("Error fetching tutors:", error.message);
