@@ -119,7 +119,8 @@ const reSubmitSession = async (req, res) => {
 const getAllSessionsAdmin = async (req, res) => {
   try {
     const sessions = await Session.find({ $or : [{status : 'pending'},{ status : 'approved'}]})
-    .populate("tutor", "name email");
+    .populate("tutor", "name email")
+    .sort({createdAt: -1});
     return res.status(200).json({
       success: true,
       sessions
