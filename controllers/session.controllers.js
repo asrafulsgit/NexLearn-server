@@ -491,19 +491,82 @@ const availableSessions = async (req, res) => {
 };
 // GET all approved Sessions
 const getAllSessions = async (req, res) => {
+
   try {
-    const sessions = await Session.find({ status: 'approved' })
-      .sort({ createdAt: -1 }); 
+    const name = req.query.name || '';
+    const title = req.query.title || '';
+    const page = parseInt(req.query.page) || 1;  
+    const limit = parseInt(req.query.limit) || 10;  
+    const skip = (page - 1) * limit;
+
+    const filter = { status: 'approved'};
+    if(name){
+      filter.name = { $regex: name, $options: "i" }
+    }
+    if(title){
+      filter.title = title;
+    }
+    const [sessions, total] = await Promise.all([
+      Session.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Session.countDocuments(filter)
+    ]);
+
+
+    const totalPages = Math.ceil(total / limit);
 
     return res.status(200).json({
       success: true,
-      message: 'Fetched all available sessions successfully',
-      sessions,
+      message: 'Fetched approved sessions successfully',
+      currentPage: page,
+      totalPages,
+      totalSessions: total,
+      sessions
     });
   } catch (error) {
+    console.error('Get Sessions Error:', error.message);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch all available sessions',
+      message: 'Failed to fetch approved sessions',
+    });
+  }
+};
+
+// search approved Sessions
+const searchApprovedSessionByName = async (req, res) => {
+  const { name } = req.query;
+
+  if (!name.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Search query is required",
+    });
+  }
+
+  try {
+    const sessions = await Session.find({
+     status : 'approved', title : { $regex: name, $options: "i" }  
+    });
+
+    // if (!sessions.length) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "No sessions found with that name",
+    //   });
+    // }
+
+    return res.status(200).json({
+      success: true,
+      message: "sessions found",
+      sessions
+    });
+  } catch (error) {
+    console.error("Error searching sessions by name:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while searching sessions",
     });
   }
 };
@@ -522,5 +585,6 @@ module.exports = {
   availableSessions,
   getAllSessions,
   updateSessionAmin,
-  deleteSessionAdmin
+  deleteSessionAdmin,
+  searchApprovedSessionByName
 };

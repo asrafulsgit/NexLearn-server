@@ -8,7 +8,14 @@ const createReview = async (req, res) => {
     const { rating, comment} = req.body;
     const studentId = req.student?.id;
 
-    if (!rating || !comment || !sessionId || !studentId) {
+    if (!(rating >= 1 && rating <= 5)) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating must have 1 to 5.",
+      });
+    }
+
+    if (!rating || !comment.trim() || !sessionId || !studentId) {
       return res.status(400).json({
         success: false,
         message: "Rating, comment, session and student are required.",
@@ -32,7 +39,7 @@ const createReview = async (req, res) => {
     }
 
     const newReview = new Review({
-      rating,
+      rating : Number(rating),
       comment,
       session : sessionId,
       student: studentId,
@@ -57,9 +64,14 @@ const createReview = async (req, res) => {
 const getReviewsBySession = async (req, res) => {
   try {
     const { sessionId } = req.params;
-
+  if (!sessionId) {
+        return res.status(400).json({
+          success: false,
+          message: "Session ID required.",
+        });
+      }
     const reviews = await Review.find({ session: sessionId })
-      .populate("student", "name avatar")
+      .populate("student", "name email avatar")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({

@@ -7,7 +7,7 @@ const reviewRouter = express.Router();
 // -------------------- STUDENT ROUTERS --------------------
 
 // Create a new review (Student)
-reviewRouter.post("/", studentAuthentication, createReview);
+reviewRouter.post("/:sessionId", studentAuthentication, createReview);
 
 // Get all reviews for a specific session
 reviewRouter.get("/session/:sessionId",studentAuthentication, getReviewsBySession);
