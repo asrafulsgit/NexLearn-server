@@ -20,6 +20,10 @@ const paymentSchema = new mongoose.Schema({
     type :  String,
     enum: ['unpaid', 'paid'],
     default: 'unpaid'
+},
+  stripePaymentIntentId: {
+    type :  String,
+    required : [true, 'stripePaymentIntentId is  required']
 }
 },{timestamps : true, versionKey : false});
 

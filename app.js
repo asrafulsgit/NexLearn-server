@@ -11,7 +11,12 @@ const tutorRouter = require('./routes/tutor.router');
 const adminRouter = require('./routes/admin.router');
 const paymentRouter = require('./routes/payment.router');
 
+
 const app = express();
+
+app.use('/api/v1/payment/webhook', express.raw({ type: 'application/json' }));
+
+
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());

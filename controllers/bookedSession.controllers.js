@@ -54,7 +54,8 @@ const bookSession = async (req, res) => {
 
     const newBooking = new BookedSession({
       session: sessionId,
-      student: studentId
+      student: studentId,
+      paymentStatus : 'paid'
     });
 
     await newBooking.save();
@@ -79,11 +80,19 @@ const getMyBookedSessions = async (req, res) => {
     const studentId = req.student?.id;
 
     const bookings = await BookedSession.find({ student: studentId })
-      .populate("session");
+  .populate({
+    path: "session",
+    select: "image title classStart fee tutor",
+    populate: {
+      path: "tutor",
+      select: "name"
+    }
+  });
+
 
     return res.status(200).json({ 
         success: true, 
-        data: bookings 
+        bookings 
     });
 
   } catch (error) {
