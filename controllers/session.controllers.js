@@ -118,13 +118,33 @@ const reSubmitSession = async (req, res) => {
 // Get all sessions (admin)
 const getAllSessionsAdmin = async (req, res) => {
   try {
-    const sessions = await Session.find({ $or : [{status : 'pending'},{ status : 'approved'}]})
-    .populate("tutor", "name email")
-    .sort({createdAt: -1});
+    const page = parseInt(req.query.page) || 1;  
+    const limit = parseInt(req.query.limit) || 10;  
+    const skip = (page - 1) * limit;
+
+    const filter = { $or: [{ status: 'pending' }, { status: 'approved' }] };
+
+    const [sessions, totalCount] = await Promise.all([
+      Session.find(filter)
+        .populate("tutor", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Session.countDocuments(filter)
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limit);
+
     return res.status(200).json({
       success: true,
-      sessions
+      sessions,
+      totalItems: totalCount,
+      totalPages,
+      currentPage: page,
+      pageSize: limit,
+      
     });
+
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -133,6 +153,7 @@ const getAllSessionsAdmin = async (req, res) => {
     });
   }
 };
+
 
 // Get all sessions (tutor)
 const getAllSessionsTutor = async (req, res) => {
