@@ -197,7 +197,7 @@ const getMaterialsBySession = async (req, res) => {
     }
     const materials = await Material.find({ session: sessionId }).populate('tutor', 'name email');
 
-    if (!materials || materials.length === 0) {
+    if (!materials) {
       return res.status(404).json({
         success: false,
         message: 'No materials found for this session.',
@@ -207,7 +207,7 @@ const getMaterialsBySession = async (req, res) => {
    return res.status(200).json({
       success: true,
       message : 'materials fatched by session id',
-      data: materials,
+      materials,
     });
   } catch (error) {
      

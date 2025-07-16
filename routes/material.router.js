@@ -28,7 +28,7 @@ materialRouter.delete('/admin/:materialId', adminAuthentication, deleteMaterial)
 
 // -------------------- STUDENT ROUTES --------------------
 
-// get materials by session
+// get materials specific session materials
 materialRouter.get('/student/:sessionId', studentAuthentication, getMaterialsBySession);
 
 module.exports = materialRouter;
