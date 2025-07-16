@@ -1,7 +1,7 @@
 # 🧠 NexLearn Backend
 
 **Project Name:** NexLearn  
-**Live URL:** _[Add Live Link Here]_
+**Live URL:** _[https://nexlearn-opal.vercel.app]_
 
 ---
 
