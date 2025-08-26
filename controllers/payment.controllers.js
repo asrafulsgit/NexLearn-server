@@ -1,5 +1,3 @@
-// ✅ Finalized Express backend with Stripe PaymentIntent API & webhook support
-const express = require('express');
 const stripe = require('../config/stripe.config');
 const Payment = require('../models/payment.model');
 const BookedSession = require('../models/bookedSession.model');
@@ -24,13 +22,11 @@ const createPaymentSession = async (req, res) => {
       return res.status(400).json({ message: 'Session is free, no payment required' });
     }
 
-    // Create PaymentIntent with automatic payment methods enabled (no payment_method or confirm)
     const paymentIntent = await stripe.paymentIntents.create({
       amount: session.fee * 100,
       currency: 'usd',
       automatic_payment_methods: {
-        enabled: true,
-        allow_redirects: 'never',  // disables redirect-based payment methods
+        enabled: true  
       },
       metadata: {
         sessionId,
@@ -38,7 +34,7 @@ const createPaymentSession = async (req, res) => {
       },
     });
 
-    // Optionally create payment record here as unpaid (can also create/update in webhook)
+    
     const isExistPayment = await Payment.findOne({ session: sessionId, student: studentId });
     if (!isExistPayment) {
       await Payment.create({
@@ -79,8 +75,6 @@ const handleStripeWebhook = async (req, res) => {
     const { sessionId, studentId } = intent.metadata;
 
     try {
-      
-
       // Book the session
         const newBook = new BookedSession({
           student: studentId,
@@ -106,46 +100,7 @@ const handleStripeWebhook = async (req, res) => {
 };
 
 
-// Utility: Get user's payments
-const getUserPayments = async (req, res) => {
-  try {
-    const { studentId } = req.params;
-    const payments = await Payment.find({ student: studentId }).populate('session');
-    res.json(payments);
-  } catch (error) {
-    console.error('getUserPayments error:', error);
-    res.status(500).json({ error: 'Failed to get user payments' });
-  }
-};
-
-// Utility: Get session payments
-const getSessionPayments = async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-    const payments = await Payment.find({ session: sessionId }).populate('student');
-    res.json(payments);
-  } catch (error) {
-    console.error('getSessionPayments error:', error);
-    res.status(500).json({ error: 'Failed to get session payments' });
-  }
-};
-
-// Utility: Delete a payment record
-const deletePayment = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Payment.findByIdAndDelete(id);
-    res.json({ message: 'Payment deleted' });
-  } catch (error) {
-    console.error('deletePayment error:', error);
-    res.status(500).json({ error: 'Failed to delete payment' });
-  }
-};
-
 module.exports = {
   createPaymentSession,
-  handleStripeWebhook,
-  getUserPayments,
-  getSessionPayments,
-  deletePayment,
+  handleStripeWebhook
 };

@@ -7,7 +7,7 @@ const paymentRouter = express.Router();
 // -------------------- STUDENT ROUTERS --------------------
 
 paymentRouter.post('/intent',studentAuthentication,createPaymentSession)
-paymentRouter.post('/webhook', handleStripeWebhook);
+paymentRouter.post('/webhook', express.raw({ type: "application/json" }), handleStripeWebhook);
 
 
 module.exports = paymentRouter;

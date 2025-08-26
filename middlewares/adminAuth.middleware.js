@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-
+ 
 const adminAuthentication = async(req,res,next)=>{
      const {nluAccessToken} =req.cookies;
      try {
